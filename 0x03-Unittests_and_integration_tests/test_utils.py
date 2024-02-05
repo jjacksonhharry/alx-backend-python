@@ -4,7 +4,7 @@ Parameterize a unit test
 """
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map
+from utils import access_nested_map, get_json, memoize
 from unittest.mock import patch, Mock
 
 
