@@ -30,7 +30,9 @@ class TestGithubOrgClient(unittest.TestCase):
         "client.get_json",
     )
     def test_org(self, org_name, mock_get_json):
-        """Test that GithubOrgClient.org returns the correct value."""
+        """
+        Test that GithubOrgClient.org returns the correct value.
+        """
 
         # Set up the mock response
         expected_result = {"org_name": org_name}
@@ -48,3 +50,19 @@ class TestGithubOrgClient(unittest.TestCase):
 
         # Assert that the result is correct
         self.assertEqual(result, expected_result)
+
+    def test_public_repos_url(self) -> None:
+        """
+        Test GithubOrgClient._public_repos_url method.
+        """
+        with patch(
+            "client.GithubOrgClient.org",
+            new_callable=PropertyMock,
+        ) as mock_org:
+            mock_org.return_value = {
+                'repos_url': "https://api.github.com/users/google/repos",
+            }
+            self.assertEqual(
+                GithubOrgClient("google")._public_repos_url,
+                "https://api.github.com/users/google/repos",
+            )
