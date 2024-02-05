@@ -44,3 +44,34 @@ class TestGetJson(unittest.TestCase):
             response = get_json(url)
 
             self.assertEqual(response, expected_output)
+
+
+class TestClass:
+
+    def a_method(self):
+        return 42
+
+    @memoize
+    def a_property(self):
+        return self.a_method()
+
+
+class TestMemoize(unittest.TestCase):
+
+    @patch.object(TestClass, 'a_method')
+    def test_memoize(self, mock_a_method):
+        test_instance = TestClass()
+
+        # First call to a_property
+        result_1 = test_instance.a_property()
+
+        # Second call to a_property
+        result_2 = test_instance.a_property()
+
+        # Assert that a_method was only called once
+        mock_a_method.assert_called_once()
+
+        # Assert that the results are correct
+        self.assertEqual(result_1, 42)
+        self.assertEqual(result_2, 42)
+        self.assertEqual(result_1, result_2)
