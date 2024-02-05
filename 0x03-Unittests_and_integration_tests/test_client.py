@@ -66,3 +66,33 @@ class TestGithubOrgClient(unittest.TestCase):
                 GithubOrgClient("google")._public_repos_url,
                 "https://api.github.com/users/google/repos",
             )
+
+    @patch(
+        'client.GithubOrgClient._public_repos_url',
+        return_value="mocked_url"
+    )
+    @patch('client.GithubOrgClient.get_json')
+    def test_public_repos(self, mock_get_json, mock_public_repos_url):
+        """Test GithubOrgClient.public_repos method."""
+
+        # Define a payload for the mocked get_json
+        get_json_payload = [{"name": "repo1"}, {"name": "repo2"}]
+
+        # Set the return value of the mocked get_json
+        mock_get_json.return_value = get_json_payload
+
+        # Instantiate GithubOrgClient
+        github_org_client = GithubOrgClient("example_org")
+
+        # Call the public_repos method
+        result = github_org_client.public_repos()
+
+        # Define the expected result based on the mocked get_json payload
+        expected_result = ["repo1", "repo2"]
+
+        # Assert that the result of public_repos is the expected one
+        self.assertEqual(result, expected_result)
+
+        # Assert that the mocked property and mocked get_json were called once
+        mock_public_repos_url.assert_called_once()
+        mock_get_json.assert_called_once_with("mocked_url")
