@@ -46,32 +46,43 @@ class TestGetJson(unittest.TestCase):
             self.assertEqual(response, expected_output)
 
 
-class TestClass:
-
-    def a_method(self):
-        return 42
-
-    @memoize
-    def a_property(self):
-        return self.a_method()
-
-
 class TestMemoize(unittest.TestCase):
+    """
+    Test memoize decorator
+    """
 
-    @patch.object(TestClass, 'a_method')
-    def test_memoize(self, mock_a_method):
-        test_instance = TestClass()
+    def test_memoize(self):
+        """
+        Test that memoize decorator caches results and a_method
+        is only called once.
+        """
 
-        # First call to a_property
-        result_1 = test_instance.a_property()
+        class TestClass:
+            """
+            Class for testing memoization.
+            """
 
-        # Second call to a_property
-        result_2 = test_instance.a_property()
+            def a_method(self):
+                """
+                A method that returns a value.
+                """
+                return 42
 
-        # Assert that a_method was only called once
-        mock_a_method.assert_called_once()
+            @memoize
+            def a_property(self):
+                """
+                A property using memoize decorator.
+                """
+                return self.a_method()
 
-        # Assert that the results are correct
-        self.assertEqual(result_1, 42)
-        self.assertEqual(result_2, 42)
-        self.assertEqual(result_1, result_2)
+        test_obj = TestClass()
+
+        with patch.object(test_obj, 'a_method') as mock_method:
+            mock_method.return_value = 42
+
+            result1 = test_obj.a_property()
+            result2 = test_obj.a_property()
+
+            self.assertEqual(result1, 42)
+            self.assertEqual(result2, 42)
+            mock_method.assert_called_once()
